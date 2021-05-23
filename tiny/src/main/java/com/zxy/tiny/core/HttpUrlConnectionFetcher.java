@@ -171,10 +171,19 @@ public class HttpUrlConnectionFetcher {
 
         @Override
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            if (chain == null || chain.length == 0)
+                throw new IllegalArgumentException("Certificate is null or empty");
+            if (authType == null || authType.length() == 0)
+                throw new IllegalArgumentException("AuthType is null or empty");
+            if (!authType.equalsIgnoreCase("ECDHE_RSA") &&
+                    !authType.equalsIgnoreCase("ECDHE_ECDSA") &&
+                    !authType.equalsIgnoreCase("RSA") &&
+                    !authType.equalsIgnoreCase("ECDSA"))
+                throw new CertificateException("Certificate is not trust");
             try {
                 chain[0].checkValidity();
             } catch (Exception e) {
-                throw new CertificateException("Certificate not valid or trusted.");
+                throw new CertificateException("Certificate is not valid or trusted");
             }
         }
 
